@@ -3,18 +3,27 @@ include("db_connect.php");
 session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = mysqli_real_escape_string($conn, $_POST['username']);
-    $password = mysqli_real_escape_string($conn, $_POST['password']);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
 
-    $query = mysqli_query($conn, "SELECT * FROM user WHERE username = '$username' AND password = '$password'") or die(mysqli_error($conn));
-    $row = mysqli_fetch_array($query);
+    // Using prepared statements to prevent SQL injection
+    $stmt = $conn->prepare("SELECT user_id, password FROM user WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
 
-    if (mysqli_num_rows($query) == 1) {
+    // Check if username exists and verify the password
+    if ($row && password_verify($password, $row['password'])) {
         $_SESSION['id'] = $row['user_id'];
         header("Location: admin_page.php");
+        exit;
     } else {
-        echo "Invalid username or password.";
+        $error = "Invalid username or password.";
     }
+
+    $stmt->close();
+    $conn->close();
 }
 ?>
 
@@ -29,6 +38,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
     <h1>Login</h1>
     <form method="post" action="">
+        <?php
+        if (isset($error)) {
+            echo '<span class="error-msg">'.$error.'</span>';
+        }
+        ?>
         <div>
             <label>Username</label>
             <input type="text" name="username" required>
