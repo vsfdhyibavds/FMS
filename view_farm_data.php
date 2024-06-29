@@ -8,7 +8,7 @@ include('sessions.php');
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Farm Management Dashboard</title>
+  <title>View Farm Data</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -25,7 +25,12 @@ include('sessions.php');
   </header>
 
   <main>
-    <!-- Removed unnecessary sections, as they will be handled by separate pages -->
+    <section id="farm-data">
+      <h2>Farm Data</h2>
+      <div id="data-container">
+        <!-- Display farm data here -->
+      </div>
+    </section>
   </main>
 
   <script src="js/script.js"></script>
